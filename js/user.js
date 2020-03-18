@@ -1,13 +1,25 @@
 $(document).ready(function() {
 
-    var userListBody = $('.userList tbody');
-    console.log(userListBody);
+    var names = [];
+    names[0] = "superuser100101";
+    localStorage.setItem("names", JSON.stringify(names));
 
-    //@todo store and somehow update the current number of users
+    // gets values from "array" stored in localstorage and enters into html
+    function loadTable() {
+            let storedNames = JSON.parse(localStorage.getItem("names"));
+            let number = 1;
+            // so entries don't appear more than once
+            $('.table tbody').empty();
+            for(index in storedNames) {
+            let newEntry = '<tr><td>' + number + '</td><td>' + storedNames[index] + '</td><td><button type="button" class="btn btn-secondary btn-danger deleteTrigger" title="Löschen"><i class="fa fa-trash"></i></button></td></tr>';
+            $('.table tbody').append(newEntry);
+            number++;
+        }
+    }
+    loadTable();
 
-
+    // on press "Hinzufügen"
     $('.needs-validation').submit(function(event) {
-
         event.preventDefault();
         event.stopPropagation();
 
@@ -18,64 +30,43 @@ $(document).ready(function() {
             return false;
         }
 
-        //@todo
         //1. get values
+        let username = $('#username').val();
+        //5. clear entries from the form
+        $('#username').val(null)
+        
         //2. create a new element
         //3. somehow add them to userListBody
         //4. update number of current users
-        //5. clear entries from the form
-        //6. maybe do something else... :-)
-
-        //your code follows here
-        let username = $('#username').val();
-        console.log(username);
-        // Wieder zurücksetzen
-        $('#username').val(null)
-        
-        // Get Tablenumber from item before
-        let tablenumber = $('.table tr:last td:first').html();
-        tablenumber++;
-        let newEntry = '<tr><td>' + tablenumber + '</td><td>' + username + '</td><td><button type="button" class="btn btn-secondary btn-danger deleteTrigger" title="Löschen"><i class="fa fa-trash"></i></button></td></tr>';
-        console.log(userListBody);
-
-        $('.table tr:last').after(newEntry);
-
-        console.log(userListBody[0].innerHTML);
-
-
-
-
+        let nameList = JSON.parse(localStorage.getItem("names"));
+        nameList.push(username);
+        // remove "array" from localstorage
+        localStorage.removeItem("names");
+        localStorage.setItem("names", JSON.stringify(nameList));
+        loadTable();
 
         return false;
     });
 
-    /*
-    $('.deleteTrigger').click(function() {
-        //@todo
-        //1. remove current user from dom
-        //2. update number of current users
-
-
-        //your code follows here
-        
-
-    });
-    */
-
     // Delete Function
     // otherwise it does not know that the button exists
     $('.userList').on('click', '.deleteTrigger', function() {
-        console.log("pressed")
-        let numberToDelete = $(this).parent().parent().children('td:first').html();
+        // confirm dialogue only returns true if pressed
+        if(confirm("Are you sure you want to delete?")) {
+            let numberToDelete = $(this).parent().parent().children('td:first').html();
+            let nameList = JSON.parse(localStorage.getItem("names"));
 
-        $(this).parent().parent().remove();
+            // removes from html
+            $(this).parent().parent().remove();
 
+            // remove chosen item from array
+            nameList.splice(numberToDelete-1, 1);
+            // remove "array" from localstorage
+            localStorage.removeItem("names");
 
-
-
-
+            localStorage.setItem("names", JSON.stringify(nameList));
+            loadTable();
+        }
     });
-
-    //maybe some code follows here
 
 });
