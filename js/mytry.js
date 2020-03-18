@@ -1,9 +1,32 @@
 $(document).ready(function() {
 
-    var userListBody = $('.userList tbody');
-    console.log(userListBody);
+    // JSON File (saved on Server or other place) gets pulled in and read out
+    function loadJSON() {
+        $.getJSON("./js/mydata.json", function(data) {
+            var names = data.name;
+            let i = 1;
+            names.forEach(function(name) {
+                let newEntry = '<tr><td>' + i + '</td><td>' + name + '</td><td><button type="button" class="btn btn-secondary btn-danger deleteTrigger" title="Löschen"><i class="fa fa-trash"></i></button></td></tr>';
+                $('.table tbody').append(newEntry);
+                i++;
+            });
+    
+        });
+    }
 
-    //@todo store and somehow update the current number of users
+    loadJSON();
+
+    function addToJSON(newName) {
+        $.getJSON("./js/mydata.json", function(data) {
+            data.push({"newName":newName});
+            var newData = JSON.stringify(data);
+            jQuery.post("./js/mydata.json", {newData: newData}, function(response) {
+                console.log("done");
+            });
+        });
+    }
+    addToJSON("WTF IS GOING ON");
+
 
 
     $('.needs-validation').submit(function(event) {
@@ -36,11 +59,9 @@ $(document).ready(function() {
         let tablenumber = $('.table tr:last td:first').html();
         tablenumber++;
         let newEntry = '<tr><td>' + tablenumber + '</td><td>' + username + '</td><td><button type="button" class="btn btn-secondary btn-danger deleteTrigger" title="Löschen"><i class="fa fa-trash"></i></button></td></tr>';
-        console.log(userListBody);
 
         $('.table tr:last').after(newEntry);
 
-        console.log(userListBody[0].innerHTML);
 
 
 
